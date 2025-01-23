@@ -59,6 +59,9 @@ func (h *GameService) GetResultService() RoundScore {
 * Submits an answer for the current round.
 **/
 func (h *GameService) SubmitAnswerService(answer string) error {
+	if !h.roundStart {
+		return fmt.Errorf("Round has not started yet.")
+	}
 
 	if answer != "A" && answer != "B" && answer != "C" && answer != "D" {
 		return fmt.Errorf("Answer needs to be A, B, C, or D.")

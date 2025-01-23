@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-const gameRoundLength = 10
+const gameRoundLength = 12
 
 type GameHandler struct {
 	service     *GameService
@@ -38,7 +38,10 @@ func (h *GameHandler) EndRoundHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		w.Write([]byte("Error when attempting to marshal to json."))
+
+		http.Error(w, "Error when attempting to marshal to json.", http.StatusBadRequest)
+
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -63,6 +66,7 @@ func (h *GameHandler) SubmitAnswerHandler(w http.ResponseWriter, r *http.Request
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
