@@ -18,7 +18,7 @@ func LoadConfig() Config {
 	err := godotenv.Load()
 
 	if err != nil {
-		fmt.Printf("Coudl not load envs, error: %s\n", err)
+		fmt.Printf("asdsad ", err)
 	}
 
 	// return config object
@@ -37,4 +37,5 @@ func getEnv(key, fallback string) string {
 	}
 
 	return fallback
+
 }

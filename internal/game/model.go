@@ -1,8 +1,12 @@
 package game
 
-type roundScore struct {
+type RoundScore struct {
 	A int
 	B int
 	C int
 	D int
+}
+
+type RoundScoreResponse struct {
+	Score RoundScore `json:"score"`
 }

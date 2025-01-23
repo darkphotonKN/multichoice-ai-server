@@ -1,39 +1,49 @@
 package game
 
 import (
-	"fmt"
-	"time"
+	"encoding/json"
+	"net/http"
 )
 
 const gameRoundLength = 10
 
 type GameHandler struct {
-	repo        *GameService
+	service     *GameService
 	roundLength int
-	roundScore  roundScore
+	roundStart  bool
+	roundScore  RoundScore
 }
 
-func NewGameHandler(repo *GameService) *GameHandler {
+func NewGameHandler(service *GameService) *GameHandler {
 	return &GameHandler{
-		repo:        repo,
+		service:     service,
 		roundLength: gameRoundLength,
 	}
 }
 
-/**
-* Starts timer for game round.
-**/
-func (h *GameHandler) StartRound() {
-	ticker := time.NewTicker(time.Duration(h.roundLength))
+func (h *GameHandler) StartRoundHandler(w http.ResponseWriter, r *http.Request) {
 
-	count := <-ticker.C
+	// start timer
+	h.service.StartRoundService()
 
-	fmt.Println(count)
+	w.Write([]byte("Game Started"))
 }
 
 /**
 * Get final result of the round reset round.
 **/
-func (h *GameHandler) GetResult() roundScore {
-	return h.roundScore
+func (h *GameHandler) GetResultHandler(w http.ResponseWriter, r *http.Request) {
+	// gather score
+	result := h.service.GetResultService()
+
+	resultResponse, err := json.Marshal(RoundScoreResponse{
+		Score: result,
+	})
+
+	if err != nil {
+		w.Write([]byte("Error when attempting to marshal to json."))
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(resultResponse)
 }

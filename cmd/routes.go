@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/darkphotonKN/go-ollama-chat/config"
+	"github.com/darkphotonKN/go-ollama-chat/internal/game"
 	"github.com/darkphotonKN/go-ollama-chat/internal/genai"
 	"github.com/rs/cors"
 )
@@ -29,6 +30,16 @@ func SetupRoutes(cfg *config.Config) http.Handler {
 	// -- api routes --
 	mux.HandleFunc("/api/query", genAIHandler.QueryAIHandler)
 	mux.HandleFunc("/api/query-multi-choice", genAIHandler.QueryAIHandler)
+
+	// --- Game ---
+
+	// -- setup --
+	gameService := game.NewGameService()
+	gameHandler := game.NewGameHandler(gameService)
+
+	// -- api routes --
+	mux.HandleFunc("/api/game/start", gameHandler.StartRoundHandler)
+	mux.HandleFunc("/api/game/result", gameHandler.GetResultHandler)
 
 	handler := c.Handler(mux)
 
