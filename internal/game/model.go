@@ -10,3 +10,7 @@ type RoundScore struct {
 type RoundScoreResponse struct {
 	Score RoundScore `json:"score"`
 }
+
+type SubmitAnswerRequest struct {
+	Answer string `json:"answer"`
+}

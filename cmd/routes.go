@@ -39,7 +39,8 @@ func SetupRoutes(cfg *config.Config) http.Handler {
 
 	// -- api routes --
 	mux.HandleFunc("/api/game/start", gameHandler.StartRoundHandler)
-	mux.HandleFunc("/api/game/result", gameHandler.GetResultHandler)
+	mux.HandleFunc("/api/game/result", gameHandler.EndRoundHandler)
+	mux.HandleFunc("/api/game/submitAnswer", gameHandler.SubmitAnswerHandler)
 
 	handler := c.Handler(mux)
 

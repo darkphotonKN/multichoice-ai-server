@@ -22,19 +22,16 @@ func NewGameHandler(service *GameService) *GameHandler {
 }
 
 func (h *GameHandler) StartRoundHandler(w http.ResponseWriter, r *http.Request) {
-
 	// start timer
 	h.service.StartRoundService()
 
 	w.Write([]byte("Game Started"))
 }
 
-/**
-* Get final result of the round reset round.
-**/
-func (h *GameHandler) GetResultHandler(w http.ResponseWriter, r *http.Request) {
-	// gather score
-	result := h.service.GetResultService()
+func (h *GameHandler) EndRoundHandler(w http.ResponseWriter, r *http.Request) {
+
+	// stop round, clear data, and get score
+	result := h.service.StopRoundService()
 
 	resultResponse, err := json.Marshal(RoundScoreResponse{
 		Score: result,
@@ -46,4 +43,28 @@ func (h *GameHandler) GetResultHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(resultResponse)
+}
+
+func (h *GameHandler) SubmitAnswerHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var request SubmitAnswerRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+		return
+	}
+
+	err := h.service.SubmitAnswerService(request.Answer)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte("Answer submitted"))
 }
