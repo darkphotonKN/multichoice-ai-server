@@ -18,7 +18,6 @@ func NewGenAIHandler(service *GenAIService) *GenAIHandler {
 }
 
 func (h *GenAIHandler) QueryAIHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Request payload: %v", r.Body)
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)

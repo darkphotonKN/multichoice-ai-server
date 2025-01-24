@@ -22,8 +22,9 @@ type anythingLLMRequest struct {
 }
 
 type AnythingLLMResponse struct {
-	Content string `json:"content"`
-	Done    bool   `json:"done"`
+	Error        string   `json:"error"`
+	TextResponse string   `json:"textResponse"`
+	Sources      []Source `json:"sources"`
 }
 
 type Message struct {
@@ -43,4 +44,17 @@ type GenAIMultiQueryRequest struct {
 type Answer struct {
 	Id   string `json:"id"`
 	Text string `json:"text"`
+}
+
+type Source struct {
+	Text        string `json:"text"`
+	Id          string `json:"id"`
+	Url         string `json:"url"`
+	Title       string `json:"title"`
+	DocAuthor   string `json:"docAuthor"`
+	Description string `json:"description"`
+	DocSource   string `json:"docSource"`
+	Published   string `json:"published"`
+	WordCount   int    `json:"wordCount"`
+	TokenCount  int    `json:"tokenCount"`
 }

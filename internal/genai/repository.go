@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"math/rand"
 	"net/http"
 
 	"github.com/darkphotonKN/go-ollama-chat/config"
@@ -92,9 +94,10 @@ func (r GenAIRepository) QueryOllama(prompt string) (*OllamaResponse, error) {
 func (r GenAIRepository) QueryAnythingLLM(prompt string) (*AnythingLLMResponse, error) {
 	// 包裝請求負載，準備發送到 AnythingLLM
 	payload := anythingLLMRequest{
-		Message:   prompt, // 如果 AnythingLLM 的參數名稱是 Message
-		Mode:      "chat",
-		SessionID: "identifier-to-partition-chats-by-external-id",
+		Message: prompt, // 如果 AnythingLLM 的參數名稱是 Message
+		Mode:    "chat",
+		// SessionID: "identifier-to-partition-chats-by-external-id",
+		SessionID: fmt.Sprintf("%d", rand.Intn(1000000)), // 隨機生成 SessionID
 	}
 
 	// 將負載轉為 JSON 格式
@@ -115,6 +118,7 @@ func (r GenAIRepository) QueryAnythingLLM(prompt string) (*AnythingLLMResponse, 
 	// 發送 HTTP 請求
 	client := &http.Client{}
 	resp, err := client.Do(req)
+
 	if err != nil {
 		return nil, err
 	}
@@ -126,36 +130,17 @@ func (r GenAIRepository) QueryAnythingLLM(prompt string) (*AnythingLLMResponse, 
 		return nil, fmt.Errorf("非正常 HTTP 狀態: %s", resp.Status)
 	}
 
-	// 準備解析流式回應
-	reader := bufio.NewReader(resp.Body)
-	var result AnythingLLMResponse
-	var fullContent string
-
-	// 逐行讀取流式回應
-	for {
-		line, err := reader.ReadBytes('\n')
-		if err != nil {
-			// 如果讀取某行失敗，結束函式並返回錯誤
-			return nil, fmt.Errorf("解析流時發生錯誤: %s", err)
-		}
-
-		// 解析 JSON，讀取每個流的區塊
-		var chunk AnythingLLMResponse
-		if err := json.Unmarshal(line, &chunk); err != nil {
-			continue // 跳過解析錯誤的區塊
-		}
-
-		fullContent += chunk.Content // 累積完整內容
-
-		// 檢查流結束的標記 (假設 AnythingLLM 有類似的字段)
-		if chunk.Done {
-			result = chunk
-			break
-		}
+	// 讀取回應的 Body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("讀取回應 Body 時發生錯誤: %v", err)
 	}
 
-	// 將完整內容更新到回應結構中
-	result.Content = fullContent
+	// 將回應的 Body 反序列化為 AnythingLLMResponse
+	var anythingLLMResponse AnythingLLMResponse
+	if err := json.Unmarshal(body, &anythingLLMResponse); err != nil {
+		return nil, fmt.Errorf("反序列化回應時發生錯誤: %v", err)
+	}
 
-	return &result, nil
+	return &anythingLLMResponse, nil
 }

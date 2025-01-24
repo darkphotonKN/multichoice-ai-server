@@ -38,6 +38,6 @@ func (s *GenAIService) AnswerMultipleChoice(request GenAIMultiQueryRequest) (*st
 	// 	return &result, nil
 	// }
 
-	return &llamaRes.Content, nil
+	return &llamaRes.TextResponse, nil
 	// return &llamaRes.Message.Content, nil
 }
