@@ -8,16 +8,12 @@ import (
 const gameRoundLength = 12
 
 type GameHandler struct {
-	service     *GameService
-	roundLength int
-	roundStart  bool
-	roundScore  RoundScore
+	service *GameService
 }
 
 func NewGameHandler(service *GameService) *GameHandler {
 	return &GameHandler{
-		service:     service,
-		roundLength: gameRoundLength,
+		service: service,
 	}
 }
 
@@ -62,7 +58,15 @@ func (h *GameHandler) SubmitAnswerHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err := h.service.SubmitAnswerService(request.Answer)
+	var player string
+
+	if request.Player == "" {
+		player = "guest"
+	} else {
+		player = request.Player
+	}
+
+	err := h.service.SubmitAnswerService(request.Answer, player)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

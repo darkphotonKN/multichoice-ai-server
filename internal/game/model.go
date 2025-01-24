@@ -12,5 +12,6 @@ type RoundScoreResponse struct {
 }
 
 type SubmitAnswerRequest struct {
+	Player string `json:"player"`
 	Answer string `json:"answer"`
 }

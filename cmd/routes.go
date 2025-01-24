@@ -14,7 +14,7 @@ func SetupRoutes(cfg *config.Config) http.Handler {
 
 	// --- general settings --
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedOrigins:   []string{"http://localhost:3000", "https://multichoice-ai-client.vercel.app"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,

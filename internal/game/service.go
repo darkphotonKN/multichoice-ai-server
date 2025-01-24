@@ -9,10 +9,13 @@ type GameService struct {
 	roundLength int
 	roundStart  bool
 	roundScore  RoundScore
+	players     map[string]RoundScore
 }
 
 func NewGameService() *GameService {
-	return &GameService{}
+	return &GameService{
+		players: make(map[string]RoundScore),
+	}
 }
 
 /**
@@ -34,14 +37,14 @@ func (s *GameService) StartRoundService() {
 /**
 * Stops the round incase goroutine failed and clear score.
 **/
-func (h *GameService) StopRoundService() RoundScore {
+func (s *GameService) StopRoundService() RoundScore {
 	// stop round
-	h.roundStart = false
+	s.roundStart = false
 
-	result := h.GetResultService()
+	result := s.GetResultService()
 
 	// clear score
-	h.roundScore = RoundScore{}
+	s.roundScore = RoundScore{}
 
 	return result
 }
@@ -49,17 +52,17 @@ func (h *GameService) StopRoundService() RoundScore {
 /**
 * Gets the final result of the round.
 **/
-func (h *GameService) GetResultService() RoundScore {
+func (s *GameService) GetResultService() RoundScore {
 
 	// gather score
-	return h.roundScore
+	return s.roundScore
 }
 
 /**
 * Submits an answer for the current round.
 **/
-func (h *GameService) SubmitAnswerService(answer string) error {
-	if !h.roundStart {
+func (s *GameService) SubmitAnswerService(answer string, player string) error {
+	if !s.roundStart {
 		return fmt.Errorf("Round has not started yet.")
 	}
 
@@ -67,15 +70,17 @@ func (h *GameService) SubmitAnswerService(answer string) error {
 		return fmt.Errorf("Answer needs to be A, B, C, or D.")
 	}
 
+	// store it globally
+
 	switch answer {
 	case "A":
-		h.roundScore.A += 1
+		s.roundScore.A += 1
 	case "B":
-		h.roundScore.B += 1
+		s.roundScore.B += 1
 	case "C":
-		h.roundScore.C += 1
+		s.roundScore.C += 1
 	case "D":
-		h.roundScore.D += 1
+		s.roundScore.D += 1
 	}
 
 	return nil
