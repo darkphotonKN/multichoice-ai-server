@@ -12,15 +12,18 @@ func NewGenAIService(repo *GenAIRepository) *GenAIService {
 	}
 }
 
-func (s *GenAIService) QueryAIService(prompt string) (*OllamaResponse, error) {
-	return s.repo.QueryOllama(prompt)
+// func (s *GenAIService) QueryAIService(prompt string) (*OllamaResponse, error) {
+func (s *GenAIService) QueryAIService(prompt string) (*AnythingLLMResponse, error) {
+	// return s.repo.QueryOllama(prompt)
+	return s.repo.QueryAnythingLLM(prompt)
 }
 
 func (s *GenAIService) AnswerMultipleChoice(request GenAIMultiQueryRequest) (*string, error) {
 
 	prompt := fmt.Sprintf("You are a quiz assistant. Your task is to choose the correct answer to the following question. Select only one answer (A, B, C, or D) and respond with the corresponding letter—nothing else. Question: %s choose from one of the answers: %v Please respond with a single letter (A, B, C, or D):", request.Question, request.Answers)
 
-	llamaRes, err := s.repo.QueryOllama(prompt)
+	// llamaRes, err := s.repo.QueryOllama(prompt)
+	llamaRes, err := s.repo.QueryAnythingLLM(prompt)
 
 	if err != nil {
 		return nil, err
@@ -35,5 +38,6 @@ func (s *GenAIService) AnswerMultipleChoice(request GenAIMultiQueryRequest) (*st
 	// 	return &result, nil
 	// }
 
-	return &llamaRes.Message.Content, nil
+	return &llamaRes.TextResponse, nil
+	// return &llamaRes.Message.Content, nil
 }
