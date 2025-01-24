@@ -15,6 +15,17 @@ type OllamaResponse struct {
 	Done       bool      `json:"done"`
 }
 
+type anythingLLMRequest struct {
+	Message   string `json:"message"`
+	Mode      string `json:"mode"`
+	SessionID string `json:"sessionId"`
+}
+
+type AnythingLLMResponse struct {
+	Content string `json:"content"`
+	Done    bool   `json:"done"`
+}
+
 type Message struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
